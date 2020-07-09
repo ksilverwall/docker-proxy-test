@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  proxy:
+    image: jwilder/nginx-proxy:alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./certs:/etc/nginx/certs:ro
+      - ./log/:/var/log/nginx/
+    environment:
+      - TZ=Asia/Tokyo
+    links:
+      - web-server
+  web-server:
+    image: httpd
+    environment:
+      - TZ=Asia/Tokyo
+      - VIRTUAL_HOST=proxy-test.docker
+      - VIRTUAL_PORT=80
+      - CERT_NAME=proxy-test.docker
